@@ -1,0 +1,31 @@
+package Example;
+
+import java_cup.runtime.*;
+
+parser code {:
+	public static void main(String args[]) throws Exception {
+		new parser(new Yylex(System.in)).parse();
+	}
+:}
+
+terminal SEMI, PLUS, TIMES, MINUS, LPAREN, RPAREN, DIVI, POW, REM, SIN, COS, TAN;
+terminal Float FLOAT;
+terminal Integer INTEGER;
+
+non terminal expr_list, expr_part, expr;
+non terminal Integer exprI;
+
+precedence left PLUS;
+precedence left TIMES;
+
+
+expr_list ::= expr_list expr_part | expr_part;
+expr_part ::= expr:e {: System.out.println("= "+e+";"); :} SEMI;
+expr 	  ::= exprI :i {: RESULT = i; :}
+			;
+exprI ::=
+		INTEGER:n 
+		  {: RESULT= n; :}
+        | exprI:l PLUS exprI:r
+	      {: RESULT=new Integer(l + r); :}
+	    ;
