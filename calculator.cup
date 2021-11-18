@@ -1,31 +1,34 @@
 package Example;
 
 import java_cup.runtime.*;
+import java.io.*;
 
 parser code {:
 	public static void main(String args[]) throws Exception {
-		new parser(new Yylex(System.in)).parse();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Ingrese la ruta junto con el nombre del archivo JSON a leer");
+		String fileNameAndPath = reader.readLine();
+		File file = new File(fileNameAndPath);
+		System.out.println("Leyendo archivo... ");
+		parser theParser = new parser(new Yylex(new FileReader(file)));
+		// new parser(new Yylex(System.in)).parse();
+		System.out.println("Se ha leido ...");
+
+		theParser.parse();
 	}
 :}
 
-terminal SEMI, PLUS, TIMES, MINUS, LPAREN, RPAREN, DIVI, POW, REM, SIN, COS, TAN;
+terminal LBRACE, RBRACE, COLON, LBRACKET, RBRACKET, COMMA, SEMI;
 terminal Float FLOAT;
+terminal Boolean BOOL_CONST;
 terminal Integer INTEGER;
+terminal AbstractSymbol STR_CONST, INT_CONST;
+
 
 non terminal expr_list, expr_part, expr;
 non terminal Integer exprI;
+non terminal Float exprF;
 
-precedence left PLUS;
-precedence left TIMES;
+non terminal jsonObject;
 
-
-expr_list ::= expr_list expr_part | expr_part;
-expr_part ::= expr:e {: System.out.println("= "+e+";"); :} SEMI;
-expr 	  ::= exprI :i {: RESULT = i; :}
-			;
-exprI ::=
-		INTEGER:n 
-		  {: RESULT= n; :}
-        | exprI:l PLUS exprI:r
-	      {: RESULT=new Integer(l + r); :}
-	    ;
+jsonObject ::= LBRACE RBRACE;
