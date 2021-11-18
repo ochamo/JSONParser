@@ -18,17 +18,28 @@ parser code {:
 	}
 :}
 
-terminal LBRACE, RBRACE, COLON, LBRACKET, RBRACKET, COMMA, SEMI;
-terminal Float FLOAT;
-terminal Boolean BOOL_CONST;
-terminal Integer INTEGER;
-terminal AbstractSymbol STR_CONST, INT_CONST;
+terminal LBRACE, RBRACE, COLON, LBRACKET, RBRACKET, COMMA, BOOL_CONST, STR_CONST, INT_CONST;
 
+nonterminal jsonObjectStart;
+nonterminal value;
+nonterminal item;
+nonterminal jsonObject;
+nonterminal jsonArray;
 
-non terminal expr_list, expr_part, expr;
-non terminal Integer exprI;
-non terminal Float exprF;
+value ::= STR_CONST: s 
+	{: RESULT = s; :} 
+	| INT_CONST: i
+	{: RESULT = i; :} 
+	| BOOL_CONST: b
+	{: RESULT = b; :}
+	;
 
-non terminal jsonObject;
+item ::= STR_CONST: s COLON: c value: v 
+	{: RESULT = v; :}
+	| STR_CONST: s COLON: c value: v COMMA: co item: i
+	{: RESULT = v; :}
+	;
 
-jsonObject ::= LBRACE RBRACE;
+jsonObjectStart ::= LBRACE: l RBRACE:r
+	{: RESULT = 1;  :}
+	;

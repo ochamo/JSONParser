@@ -2,7 +2,7 @@ package Example;
 import java_cup.runtime.Symbol;
 
 
-class JsonLexer implements java_cup.runtime.Scanner {
+class Yylex implements java_cup.runtime.Scanner {
 	private final int YY_BUFFER_SIZE = 512;
 	private final int YY_F = -1;
 	private final int YY_NO_STATE = -1;
@@ -23,7 +23,7 @@ class JsonLexer implements java_cup.runtime.Scanner {
 	private boolean yy_at_bol;
 	private int yy_lexical_state;
 
-	JsonLexer (java.io.Reader reader) {
+	Yylex (java.io.Reader reader) {
 		this ();
 		if (null == reader) {
 			throw (new Error("Error: Bad input stream initializer."));
@@ -31,7 +31,7 @@ class JsonLexer implements java_cup.runtime.Scanner {
 		yy_reader = new java.io.BufferedReader(reader);
 	}
 
-	JsonLexer (java.io.InputStream instream) {
+	Yylex (java.io.InputStream instream) {
 		this ();
 		if (null == instream) {
 			throw (new Error("Error: Bad input stream initializer."));
@@ -39,7 +39,7 @@ class JsonLexer implements java_cup.runtime.Scanner {
 		yy_reader = new java.io.BufferedReader(new java.io.InputStreamReader(instream));
 	}
 
-	private JsonLexer () {
+	private Yylex () {
 		yy_buffer = new char[YY_BUFFER_SIZE];
 		yy_buffer_read = 0;
 		yy_buffer_index = 0;
@@ -50,11 +50,11 @@ class JsonLexer implements java_cup.runtime.Scanner {
 	}
 
 	private boolean yy_eof_done = false;
+	private final int STR_STATE = 1;
 	private final int YYINITIAL = 0;
-	private final int STRING_STATE = 1;
 	private final int yy_state_dtrans[] = {
 		0,
-		0
+		16
 	};
 	private void yybegin (int state) {
 		yy_lexical_state = state;
@@ -207,17 +207,23 @@ class JsonLexer implements java_cup.runtime.Scanner {
 		/* 9 */ YY_NO_ANCHOR,
 		/* 10 */ YY_NO_ANCHOR,
 		/* 11 */ YY_NO_ANCHOR,
-		/* 12 */ YY_NO_ANCHOR
+		/* 12 */ YY_NO_ANCHOR,
+		/* 13 */ YY_NO_ANCHOR,
+		/* 14 */ YY_NO_ANCHOR,
+		/* 15 */ YY_NO_ANCHOR,
+		/* 16 */ YY_NOT_ACCEPT,
+		/* 17 */ YY_NO_ANCHOR
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
-"10:9,9,11,10:2,11,10:30,1,10:13,4,10:32,7,10,8,10:3,6,10:3,5,6,10:5,6,10:5," +
-"5,6,5:2,10:5,2,10,3,10:2,0:2")[0];
+"13:9,12:2,13:2,14,13:20,3,13:9,1,13:3,2:10,7,13:6,4:26,10,13,11,13:3,9,4:3," +
+"8,9,4:5,9,4:5,8,9,8:2,4:5,5,13,6,13:2,0:2")[0];
 
-	private int yy_rmap[] = unpackFromString(1,13,
-"0,1:12")[0];
+	private int yy_rmap[] = unpackFromString(1,18,
+"0,1:2,2,1:11,3,4,5")[0];
 
-	private int yy_nxt[][] = unpackFromString(2,12,
-"1,2,3,4,5,6,7,8,9,10,11,12,-1:12");
+	private int yy_nxt[][] = unpackFromString(6,15,
+"1,2,3,4,5,6,7,8,9,10,11,12,13,5,14,-1:17,3,-1:14,15,-1,15,-1:3,15:2,-1:5,1," +
+"2,17,4,15,6,7,8,15:2,11,12,13,5,14,-1:2,17,-1,15,-1:3,15:2,-1:5");
 
 	public java_cup.runtime.Symbol next_token ()
 		throws java.io.IOException {
@@ -275,57 +281,81 @@ class JsonLexer implements java_cup.runtime.Scanner {
 						break;
 					case 3:
 						{
-    return new Symbol(sym.LBRACE);
+    return new Symbol(sym.INT_CONST);
 }
 					case -4:
 						break;
 					case 4:
 						{
-    return new Symbol(sym.RBRACE);
+    yybegin(STR_STATE);
 }
 					case -5:
 						break;
 					case 5:
-						{
-    return new Symbol(sym.COLON);
-}
+						{ System.err.println("Illegal character: "+yytext()); }
 					case -6:
 						break;
 					case 6:
 						{
-    return new Symbol(sym.BOOL_CONST);
+    return new Symbol(sym.LBRACE);
 }
 					case -7:
 						break;
 					case 7:
 						{
-    return new Symbol(sym.BOOL_CONST);
+    return new Symbol(sym.RBRACE);
 }
 					case -8:
 						break;
 					case 8:
 						{
-    return new Symbol(sym.LBRACKET);
+    return new Symbol(sym.COLON);
 }
 					case -9:
 						break;
 					case 9:
 						{
-    return new Symbol(sym.RBRACKET);
+    return new Symbol(sym.BOOL_CONST);
 }
 					case -10:
 						break;
 					case 10:
-						{ /* ignorar espacios en blanco. */ }
+						{
+    return new Symbol(sym.BOOL_CONST);
+}
 					case -11:
 						break;
 					case 11:
-						{ System.err.println("Illegal character: "+yytext()); }
+						{
+    return new Symbol(sym.LBRACKET);
+}
 					case -12:
 						break;
 					case 12:
-						{}
+						{
+    return new Symbol(sym.RBRACKET);
+}
 					case -13:
+						break;
+					case 13:
+						{ /* ignorar espacios en blanco. */ }
+					case -14:
+						break;
+					case 14:
+						{}
+					case -15:
+						break;
+					case 15:
+						{
+        System.out.println("hola");
+}
+					case -16:
+						break;
+					case 17:
+						{
+    return new Symbol(sym.INT_CONST);
+}
+					case -17:
 						break;
 					default:
 						yy_error(YY_E_INTERNAL,false);

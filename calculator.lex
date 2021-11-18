@@ -9,13 +9,31 @@ import java_cup.runtime.Symbol;
 %}
 
 
-%class JsonLexer
+
 %cup
-%state STRING_STATE
+%state STR_STATE
 %%
 
 "," {
     return new Symbol(sym.COMMA);
+}
+
+[0-9]+ {
+    return new Symbol(sym.INT_CONST);
+}
+
+[\"] {
+    yybegin(STR_STATE);
+}
+
+
+<STR_STATE>[a-zA-Z0-9]+ {
+        System.out.println("hola");
+}
+
+<STR_STATE>[\"] {
+    yybegin(YYINITIAL);
+    return new Symbol(sym.STR_CONST);
 }
 
 [\{] {
@@ -47,7 +65,7 @@ import java_cup.runtime.Symbol;
 }
 
 
-[\t] { /* ignorar espacios en blanco. */ }
+[\t\n] { /* ignorar espacios en blanco. */ }
 . { System.err.println("Illegal character: "+yytext()); }
 
 [\n\f\r\t\x0B] {}
